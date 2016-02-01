@@ -15,12 +15,12 @@ public class Robot extends SampleRobot {
     double right;
     SendableChooser autoChooser;
     DefaultAutonomous defaultAutonomous;
-    Command autonomousCommand;
+    Command autonomousCommand, rtAuto;
     public void initSmartBoard()
     {
     	autoChooser.addDefault("Under Low Bar", defaultAutonomous);
-    	SmartDashboard.putBoolean("Autonomous", isAutonomous());
-        SmartDashboard.putBoolean("TeleOp", isOperatorControl());
+    	autoChooser.addObject("Rough Terrain", rtAuto);
+        SmartDashboard.putData("Auto Command",autoChooser);
     }
     public Robot() {
         myRobot = new RobotDrive(0, 1,2,3);
@@ -28,6 +28,7 @@ public class Robot extends SampleRobot {
         rightStick = new Joystick(1);
         autoChooser = new SendableChooser();
         defaultAutonomous = new DefaultAutonomous(myRobot);
+        rtAuto = new rtAutonomous();
         initSmartBoard();
     }
     public void autonomous()
