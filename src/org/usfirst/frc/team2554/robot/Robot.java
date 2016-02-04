@@ -22,7 +22,7 @@ public class Robot extends SampleRobot {
     	autoChooser.addObject("Rough Terrain", rtAuto);
         SmartDashboard.putData("Auto Command",autoChooser);
     }
-    public Robot() {
+     public Robot() {
         myRobot = new RobotDrive(0, 1,2,3);
         myRobot.setExpiration(0.1);
         rightStick = new Joystick(1);
