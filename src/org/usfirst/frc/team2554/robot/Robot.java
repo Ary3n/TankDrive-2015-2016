@@ -35,6 +35,7 @@ public class Robot extends SampleRobot {
     {
     	autonomousCommand = (Command) autoChooser.getSelected();
     	autonomousCommand.start();
+    	Timer.delay(0.05);
     }
     /**
      * The motors using arcade steering
