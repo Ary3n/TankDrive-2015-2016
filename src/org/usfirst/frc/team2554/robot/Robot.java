@@ -18,7 +18,14 @@ import edu.wpi.first.wpilibj.buttons.*;
     RobotDrive shooter;
 
     // Two drivers necessary!
-    Joystick rightStick, controller; // set to ID 1 in DriverStation
+    
+    /*
+     	PORT 0 MUST BE JOYSTICK OR THINGS WON'T WORK
+    	PORT 1 MUST BE CONTROLLER OR THINGS WON'T WORK
+    	CONTROLLER MUST BE SET TO XINPUT
+    	CONTROLLER BINDS AT END OF FILE
+     */
+    Joystick rightStick, controller; // set CONTROLLER to ID 1 in DriverStation
     JoystickButton launchButton;
     //double right;
     SendableChooser autoChooser;
@@ -57,20 +64,44 @@ import edu.wpi.first.wpilibj.buttons.*;
         myRobot.setSafetyEnabled(true);
         while (isOperatorControl() && isEnabled()) 
         {
-        	myRobot.arcadeDrive(rightStick, 1,rightStick,2);
+        	myRobot.arcadeDrive( -rightStick.getY(), -rightStick.getZ() );			//
+        	//myRobot.arcadeDrive(rightStick, 1,rightStick,2); 						//
         	//Set speed of each arm based on y-axis of each joystick on controller
         		//1 is L Y Axis
         		//5 is R Y Axis
 	        armBar.set(controller.getRawAxis(1)/5.0);
-	        armShooter.set(controller.getRawAxis(5)/5.0);
-	        //Shooter System NOTE: Not a subsystem. 
+	        
+	        
+	        // R Y axis deadzone of 0.1
+	        if( controller.getRawAxis(5) <= 0.1 && controller.getRawAxis(5) >= -0.1 ) {//
+	        	armShooter.set( armShooter.get() );									   //
+	        } else {
+	        	armShooter.set(controller.getRawAxis(5)/5.0);
+	        }
+	        
+	        //Shooter System NOTE: Not a subsystem. THIS WORKS!
 	        //3 is Right Trigger
-	        shooter.arcadeDrive(0,controller.getRawAxis(3));
+	        if( controller.getRawAxis(3) > 0.1 )								   //
+	        	shooter.arcadeDrive(0,controller.getRawAxis(3)); 					
 	        //Collector; 2 is left trigger
-	        shooter.arcadeDrive(0,-controller.getRawAxis(2));
+	        if( controller.getRawAxis(2) > 0.1 )
+	        	shooter.arcadeDrive(0,-controller.getRawAxis(2));
+	        if( controller.getRawAxis(2) > 0.1 && controller.getRawAxis(3) > 0.1 )
+	        	shooter.arcadeDrive(0,0);
+	        
+	        
 	        launchButton.whenPressed(new Launch());
             Timer.delay(0.005);		// wait for a motor update time
         }
     }
 
 }
+
+/**
+*	CONTROLLER BINDS:
+*	Left Y axis: armBar moves up/down?
+*	Right Y Axis: armShooter moves up/down?
+*	Left Trigger: Get ball
+*	Right Trigger: Shoot ball
+*	Select: 
+*/
