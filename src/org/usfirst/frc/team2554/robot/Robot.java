@@ -4,6 +4,7 @@ package org.usfirst.frc.team2554.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SampleRobot;
+import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.*;
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj.Victor;
 
 import org.usfirst.frc.team2554.robot.commands.*;
 import org.usfirst.frc.team2554.robot.subsystems.*;
+
 import edu.wpi.first.wpilibj.buttons.*;
 
 public class Robot extends SampleRobot {
@@ -26,12 +28,13 @@ public class Robot extends SampleRobot {
     	CONTROLLER BINDS AT END OF FILE
      */
     Joystick rightStick, controller; // set CONTROLLER to ID 1 in DriverStation
-    JoystickButton launchButton;
+    JoystickButton launchButton, autoAimButton;
     //double right;
     SendableChooser autoChooser;
     Command autonomousCommand;
     Victor armBar,armShooter;
-    final double DEADZONE = 0.0;
+    Spark launcher;
+    final double DEADZONE = 0.25;
     
     public void initSmartBoard()
     {
@@ -41,14 +44,16 @@ public class Robot extends SampleRobot {
     }
     
     public Robot() {
-        myRobot = new RobotDrive(1,0,3,2); //FrontLeft, BackLeft, FrontRight, BackRight
+        myRobot = new RobotDrive(0,1); //FrontLeft, BackLeft, FrontRight, BackRight
         shooter = new RobotDrive(4,5);
         armBar = new Victor(6);
         armShooter = new Victor(7);
+        launcher = new Spark(8);
         myRobot.setExpiration(0.1);
         rightStick = new Joystick(0);
         controller = new Joystick(1);
-        launchButton = new JoystickButton(controller, 7);
+        launchButton = new JoystickButton(controller, 6);
+        autoAimButton = new JoystickButton(controller,5);
         autoChooser = new SendableChooser();
         initSmartBoard();
     }
@@ -70,16 +75,21 @@ public class Robot extends SampleRobot {
         	//Set speed of each arm based on y-axis of each joystick on controller
         		//1 is L Y Axis
         		//5 is R Y Axis
-	        armBar.set(controller.getRawAxis(1)/5.0);
-	        
+	        if(controller.getRawAxis(1) <= DEADZONE && controller.getRawAxis(1) >= -DEADZONE) {
+	        	armBar.set(-0.08);
+	        }
+	        else  {
+	        	armBar.set(controller.getRawAxis(1)/3.0);
+	        }
+	        	
 	        
 	        // R Y axis DEADZONE set at instance create
 	        if( controller.getRawAxis(5) <= DEADZONE && controller.getRawAxis(5) >= -DEADZONE ) {
-	        	armShooter.set( -0.1 );
+	        	armShooter.set(-0.1);
 	        } else if( controller.getRawAxis(5) < -DEADZONE ) {
-	        	armShooter.set(controller.getRawAxis(5)/3.0);
+	        	armShooter.set(controller.getRawAxis(5)/4.0);
 	        } else {
-	        	armShooter.set(controller.getRawAxis(5)/5.0);
+	        	armShooter.set(controller.getRawAxis(5)/4.0);
 	        }
 	        
 	        //Shooter System NOTE: Not a subsystem. THIS WORKS!
@@ -93,8 +103,15 @@ public class Robot extends SampleRobot {
 	        	shooter.arcadeDrive(0,0);
 	        
 	        
-	        launchButton.whenPressed(new Launch());
-            Timer.delay(0.005);		// wait for a motor update time
+	        if (controller.getRawButton(6))
+	        {
+	        	launcher.set(-1);
+	        }
+	        else{
+	        	launcher.set(1);
+	        }
+	        autoAimButton.whileHeld(new AutoAim(myRobot,armShooter));
+            Timer.delay(0.0025);		// wait for a motor update time
         }
     }
 

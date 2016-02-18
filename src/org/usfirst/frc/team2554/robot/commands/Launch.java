@@ -6,21 +6,20 @@ import edu.wpi.first.wpilibj.command.*;
 
 public class Launch extends Command {
 	private Spark launcher;
-	final double speed = 0.5; // From -1 to 1
-	final double timerDelay = 3;
+	final double speed = -0.5; // From -1 to 1
+	final double timerDelay = 1;
 
 	public Launch() {
+		launcher = new Spark(8);
 	}
 
 	protected void initialize() {
-		launcher = new Spark(8);
+
 	}
 
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() {
 		launcher.set(speed);
-		Timer.delay(1);
-		launcher.set(-speed);
 	}
 
 	// Make this return true when this Command no longer needs to run execute()
