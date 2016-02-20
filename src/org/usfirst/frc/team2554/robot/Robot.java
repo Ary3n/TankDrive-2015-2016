@@ -1,6 +1,10 @@
 package org.usfirst.frc.team2554.robot;
 
 
+import org.usfirst.frc.team2554.robot.commands.AutoAim;
+import org.usfirst.frc.team2554.robot.commands.DefaultAutonomous;
+import org.usfirst.frc.team2554.robot.commands.rtAutonomous;
+
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Relay;
@@ -9,14 +13,11 @@ import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj.Victor;
-
-import org.usfirst.frc.team2554.robot.commands.*;
-import org.usfirst.frc.team2554.robot.subsystems.*;
-
-import edu.wpi.first.wpilibj.buttons.*;
+import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends SampleRobot {
     RobotDrive myRobot;  // class that handles basic drive operations
@@ -28,11 +29,10 @@ public class Robot extends SampleRobot {
      	PORT 0 MUST BE JOYSTICK OR THINGS WON'T WORK
     	PORT 1 MUST BE CONTROLLER OR THINGS WON'T WORK
     	CONTROLLER MUST BE SET TO XINPUT
-    	CONTROLLER BINDS AT END OF FILE
+    	CONTROLLER BINDS @ EOF
      */
     Joystick rightStick, controller; // set CONTROLLER to ID 1 in DriverStation
     JoystickButton launchButton, autoAimButton;
-    //double right;
     SendableChooser autoChooser;
     Command autonomousCommand;
     Victor armBar,armShooter;
@@ -48,13 +48,13 @@ public class Robot extends SampleRobot {
     }
     
     public Robot() {
-        myRobot = new RobotDrive(0,1); //FrontLeft, BackLeft, FrontRight, BackRight
+        myRobot = new RobotDrive(3,1); //FrontLeft, BackLeft, FrontRight, BackRight 
         shooter = new RobotDrive(4,5);
         armBar = new Victor(6);
         armShooter = new Victor(7);
         launcher = new Spark(8);
         roller = new Spark(2);
-        extension = new Relay(9);
+        extension = new Relay(0);
         myRobot.setExpiration(0.1);
         rightStick = new Joystick(0);
         controller = new Joystick(1);
@@ -126,14 +126,17 @@ public class Robot extends SampleRobot {
 	        	launcher.set(1);
 	        }
 	        autoAimButton.whileHeld(new AutoAim(myRobot,armShooter));
-            Timer.delay(0.0025);		// wait for a motor update time
-            
-            // 1 is A
+	        
+	        // 1 is A
             if( controller.getRawButton(1) ) {
+            	extension.set(Value.kReverse);
+            } else if( controller.getRawButton(2) ) {
             	extension.set(Value.kForward);
             } else {
             	extension.set(Value.kOff);
             }
+	        
+            Timer.delay(0.0025);		// wait for a motor update time
         }
     }
 
