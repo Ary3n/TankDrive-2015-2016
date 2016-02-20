@@ -1,7 +1,10 @@
 package org.usfirst.frc.team2554.robot;
 
 
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Relay;
+import edu.wpi.first.wpilibj.Relay.Value;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Spark;
@@ -33,7 +36,8 @@ public class Robot extends SampleRobot {
     SendableChooser autoChooser;
     Command autonomousCommand;
     Victor armBar,armShooter;
-    Spark launcher;
+    Spark launcher,roller;
+    Relay extension;
     final double DEADZONE = 0.25;
     
     public void initSmartBoard()
@@ -49,6 +53,8 @@ public class Robot extends SampleRobot {
         armBar = new Victor(6);
         armShooter = new Victor(7);
         launcher = new Spark(8);
+        roller = new Spark(2);
+        extension = new Relay(9);
         myRobot.setExpiration(0.1);
         rightStick = new Joystick(0);
         controller = new Joystick(1);
@@ -56,6 +62,10 @@ public class Robot extends SampleRobot {
         autoAimButton = new JoystickButton(controller,5);
         autoChooser = new SendableChooser();
         initSmartBoard();
+        
+        CameraServer server = CameraServer.getInstance();
+        server.setQuality(50);
+        server.startAutomaticCapture("cam0");
     }
     public void autonomous()
     {
@@ -78,7 +88,7 @@ public class Robot extends SampleRobot {
 	        if(controller.getRawAxis(1) <= DEADZONE && controller.getRawAxis(1) >= -DEADZONE) {
 	        	armBar.set(-0.08);
 	        }
-	        else  {
+	        else {
 	        	armBar.set(controller.getRawAxis(1)/3.0);
 	        }
 	        	
@@ -87,9 +97,9 @@ public class Robot extends SampleRobot {
 	        if( controller.getRawAxis(5) <= DEADZONE && controller.getRawAxis(5) >= -DEADZONE ) {
 	        	armShooter.set(-0.1);
 	        } else if( controller.getRawAxis(5) < -DEADZONE ) {
-	        	armShooter.set(controller.getRawAxis(5)/4.0);
+	        	armShooter.set(controller.getRawAxis(5)/3.0);
 	        } else {
-	        	armShooter.set(controller.getRawAxis(5)/4.0);
+	        	armShooter.set(controller.getRawAxis(5)/3.0);
 	        }
 	        
 	        //Shooter System NOTE: Not a subsystem. THIS WORKS!
@@ -97,21 +107,33 @@ public class Robot extends SampleRobot {
 	        if( controller.getRawAxis(3) > 0.1 )
 	        	shooter.arcadeDrive(0,controller.getRawAxis(3)); 					
 	        //Collector; 2 is left trigger
-	        if( controller.getRawAxis(2) > 0.1 )
+	        if( controller.getRawAxis(2) > 0.1 ) {
 	        	shooter.arcadeDrive(0,-controller.getRawAxis(2));
-	        if( controller.getRawAxis(2) > 0.1 && controller.getRawAxis(3) > 0.1 )
-	        	shooter.arcadeDrive(0,0);
-	        
-	        
-	        if (controller.getRawButton(6))
-	        {
-	        	launcher.set(-1);
+	        	roller.set(0.3);
+	        } else {
+	        	roller.set(0.0);
 	        }
-	        else{
+	        
+	        if( controller.getRawAxis(2) > 0.1 && controller.getRawAxis(3) > 0.1 ) {
+	        	shooter.arcadeDrive(0,0);
+	        	roller.set(0);
+	        }
+	        
+	        // 6 is left bumper?
+	        if (controller.getRawButton(6)) {
+	        	launcher.set(-1);
+	        } else {
 	        	launcher.set(1);
 	        }
 	        autoAimButton.whileHeld(new AutoAim(myRobot,armShooter));
             Timer.delay(0.0025);		// wait for a motor update time
+            
+            // 1 is A
+            if( controller.getRawButton(1) ) {
+            	extension.set(Value.kForward);
+            } else {
+            	extension.set(Value.kOff);
+            }
         }
     }
 
@@ -119,9 +141,9 @@ public class Robot extends SampleRobot {
 
 /**
 *	CONTROLLER BINDS:
-*	Left Y axis: armBar moves up/down?
-*	Right Y Axis: armShooter moves up/down?
-*	Left Trigger: Get ball
-*	Right Trigger: Shoot ball
+*	Left Y axis: armBar moves up/down
+*	Right Y Axis: armShooter moves up/down
+*	Left Trigger: Reverse Rev motors (suck in) ‎( ͡° ͜ʖ ͡°)
+*	Right Trigger: Rev motors
 *	Select: 
 */
