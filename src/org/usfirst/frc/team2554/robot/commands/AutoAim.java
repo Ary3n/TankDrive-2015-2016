@@ -17,13 +17,13 @@ public class AutoAim extends Command {
         // Use requires() here to declare subsystem dependencies
     	xCenter = 0.0;
     	yCenter = 0.0;
-    	totalCenterX = 640;
-    	totalCenterY = 360;
+    	totalCenterX = 320; //adjust
+    	totalCenterY = 240; //adjust
     	driveSystem = drive;
     	shooterArm = shooter;
     	isXCentered = false;
     	isYCentered = false;
-    	goodZone = 50; //Change Value
+    	goodZone = 5; //Change Value
     	table = NetworkTable.getTable("GRIP/myContoursReport");
     }
 

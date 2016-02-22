@@ -38,14 +38,15 @@ public class Robot extends SampleRobot {
     Victor armBar,armShooter;
     Spark launcher,roller;
     Relay extension;
-    final double DEADZONE = 0.25;
+    CameraServer server;
+    final double DEADZONE = 0.10;
     
     public void initSmartBoard()
     {
     	autoChooser.addDefault("Under Low Bar", new DefaultAutonomous(myRobot));
     	autoChooser.addObject("Rough Terrain", new rtAutonomous());
-        SmartDashboard.putData("Auto Command",autoChooser);
-    }
+        SmartDashboard.putData("Auto Command",autoChooser);  
+        }
     
     public Robot() {
         myRobot = new RobotDrive(3,1); //FrontLeft, BackLeft, FrontRight, BackRight 
@@ -61,11 +62,11 @@ public class Robot extends SampleRobot {
         launchButton = new JoystickButton(controller, 6);
         autoAimButton = new JoystickButton(controller,5);
         autoChooser = new SendableChooser();
-        initSmartBoard();
-        
-        CameraServer server = CameraServer.getInstance();
+
+        server = CameraServer.getInstance();
         server.setQuality(50);
         server.startAutomaticCapture("cam0");
+        initSmartBoard();
     }
     public void autonomous()
     {
@@ -77,7 +78,7 @@ public class Robot extends SampleRobot {
      * The motors using arcade steering
      */
     public void operatorControl() {
-        myRobot.setSafetyEnabled(true);
+        myRobot.setSafetyEnabled(false);
         while (isOperatorControl() && isEnabled()) 
         {
         	myRobot.arcadeDrive( -rightStick.getY(), -rightStick.getZ() );			
@@ -95,20 +96,20 @@ public class Robot extends SampleRobot {
 	        
 	        // R Y axis DEADZONE set at instance create
 	        if( controller.getRawAxis(5) <= DEADZONE && controller.getRawAxis(5) >= -DEADZONE ) {
-	        	armShooter.set(-0.1);
+	        	armShooter.set(-0.15);
 	        } else if( controller.getRawAxis(5) < -DEADZONE ) {
-	        	armShooter.set(controller.getRawAxis(5)/3.0);
+	        	armShooter.set(controller.getRawAxis(5)/2.0);
 	        } else {
-	        	armShooter.set(controller.getRawAxis(5)/3.0);
+	        	armShooter.set(controller.getRawAxis(5)/2.0);
 	        }
 	        
 	        //Shooter System NOTE: Not a subsystem. THIS WORKS!
 	        //3 is Right Trigger
 	        if( controller.getRawAxis(3) > 0.1 )
-	        	shooter.arcadeDrive(0,controller.getRawAxis(3)); 					
+	        	shooter.arcadeDrive(0,-controller.getRawAxis(3)); 					
 	        //Collector; 2 is left trigger
 	        if( controller.getRawAxis(2) > 0.1 ) {
-	        	shooter.arcadeDrive(0,-controller.getRawAxis(2));
+	        	shooter.arcadeDrive(0,controller.getRawAxis(2));
 	        	roller.set(0.3);
 	        } else {
 	        	roller.set(0.0);
