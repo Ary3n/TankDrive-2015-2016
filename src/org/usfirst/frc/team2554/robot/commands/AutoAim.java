@@ -66,7 +66,7 @@ public class AutoAim extends Command {
 
     // Called once after isFinished returns true
     protected void end() {
-    	shooterArm.set(0);
+    	shooterArm.set(-0.15);
     	driveSystem.arcadeDrive(0,0);
     }
 

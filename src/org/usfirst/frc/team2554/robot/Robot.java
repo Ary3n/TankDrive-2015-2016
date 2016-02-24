@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import edu.wpi.first.wpilibj.AnalogInput;
 public class Robot extends SampleRobot {
     RobotDrive myRobot;  // class that handles basic drive operations
     RobotDrive shooter;
@@ -31,6 +31,7 @@ public class Robot extends SampleRobot {
     	CONTROLLER MUST BE SET TO XINPUT
     	CONTROLLER BINDS @ EOF
      */
+    AnalogInput distanceSensor;
     Joystick rightStick, controller; // set CONTROLLER to ID 1 in DriverStation
     JoystickButton launchButton, autoAimButton;
     SendableChooser autoChooser;
@@ -39,6 +40,7 @@ public class Robot extends SampleRobot {
     Spark launcher,roller;
     Relay extension;
     CameraServer server;
+    double distance;
     final double DEADZONE = 0.10;
     
     public void initSmartBoard()
@@ -46,6 +48,7 @@ public class Robot extends SampleRobot {
     	autoChooser.addDefault("Under Low Bar", new DefaultAutonomous(myRobot));
     	autoChooser.addObject("Rough Terrain", new rtAutonomous());
         SmartDashboard.putData("Auto Command",autoChooser);  
+        SmartDashboard.putDouble("Distance", distance);
         }
     
     public Robot() {
@@ -61,7 +64,9 @@ public class Robot extends SampleRobot {
         controller = new Joystick(1);
         launchButton = new JoystickButton(controller, 6);
         autoAimButton = new JoystickButton(controller,5);
+        distanceSensor = new AnalogInput(1);
         autoChooser = new SendableChooser();
+        distance = 0;
 
         server = CameraServer.getInstance();
         server.setQuality(50);
@@ -78,7 +83,7 @@ public class Robot extends SampleRobot {
      * The motors using arcade steering
      */
     public void operatorControl() {
-        myRobot.setSafetyEnabled(false);
+        myRobot.setSafetyEnabled(true);
         while (isOperatorControl() && isEnabled()) 
         {
         	myRobot.arcadeDrive( -rightStick.getY(), -rightStick.getZ() );			
@@ -97,9 +102,8 @@ public class Robot extends SampleRobot {
 	        // R Y axis DEADZONE set at instance create
 	        if( controller.getRawAxis(5) <= DEADZONE && controller.getRawAxis(5) >= -DEADZONE ) {
 	        	armShooter.set(-0.15);
-	        } else if( controller.getRawAxis(5) < -DEADZONE ) {
-	        	armShooter.set(controller.getRawAxis(5)/2.0);
-	        } else {
+	        }
+	        else {
 	        	armShooter.set(controller.getRawAxis(5)/2.0);
 	        }
 	        
@@ -110,7 +114,7 @@ public class Robot extends SampleRobot {
 	        //Collector; 2 is left trigger
 	        if( controller.getRawAxis(2) > 0.1 ) {
 	        	shooter.arcadeDrive(0,controller.getRawAxis(2));
-	        	roller.set(0.3);
+	        	roller.set(0.4);
 	        } else {
 	        	roller.set(0.0);
 	        }
@@ -136,11 +140,10 @@ public class Robot extends SampleRobot {
             } else {
             	extension.set(Value.kOff);
             }
-	        
-            Timer.delay(0.0025);		// wait for a motor update time
+	        distance = distanceSensor.getValue();
+            Timer.delay(0.005);		// wait for a motor update time
         }
-    }
-
+   }
 }
 
 /**
@@ -151,3 +154,15 @@ public class Robot extends SampleRobot {
 *	Right Trigger: Rev motors
 *	Select: 
 */
+/*
+ Warning  44003  FRC:  No robot code is currently running.  Driver Station 
+ Java HotSpot(TM) Embedded Client VM warning: INFO: os::commit_memory(0xb2ea3000, 22814720, 0) failed; error='Cannot allocate memory' (errno=12) 
+ # There is insufficient memory for the Java Runtime Environment to continue. 
+ # An error report file with more information is saved as: 
+ âž” Launching Â«'/usr/local/frc/JRE/bin/java' '-jar' '/home/lvuser/FRCUserProgram.jar'Â» 
+ NT: server: client CONNECTED: 10.25.54.158 port 55973 
+ Camera not yet ready, awaiting image 
+ Default disabled() method running, consider providing your own 
+ # 
+ # /tmp/hs_err_pid2729.log 
+ */
