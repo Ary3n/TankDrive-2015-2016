@@ -4,14 +4,17 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Victor;
 /**
  *
  */
-public class DefaultAutonomous extends Command {
+public class Portcullis extends Command {
 	RobotBase robotBase;
 	RobotDrive myRobot;
-    public DefaultAutonomous(RobotDrive driveSystem) {
+	Victor armBar;
+    public Portcullis(RobotDrive driveSystem) {
     	 myRobot = driveSystem;
+    	 armBar= new Victor(6);
         // Use requires() here to declare subsystem dependencies
     }
 
@@ -21,13 +24,18 @@ public class DefaultAutonomous extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	myRobot.drive(0.5,0);
-    	Timer.delay(2.0);
+    	myRobot.drive(0.2,0);
+    	Timer.delay(1.0);
+    	myRobot.drive(0,0);
+    	armBar.set(.3);
+    	Timer.delay(1.0);
+    	myRobot.drive(0.2,0);
+    	Timer.delay(1.0);
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return(timeSinceInitialized()>2);
+        return(timeSinceInitialized()>3);
     }
 
     // Called once after isFinished returns true
