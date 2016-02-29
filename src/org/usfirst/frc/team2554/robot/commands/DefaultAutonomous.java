@@ -21,7 +21,7 @@ public class DefaultAutonomous extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	myRobot.drive(0.5,0);
+    	myRobot.tankDrive(0.5,0.5); //myRobot.drive(.5,0);
     	Timer.delay(2.0);
     }
 

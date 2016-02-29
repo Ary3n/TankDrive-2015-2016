@@ -39,16 +39,16 @@ public class Robot extends SampleRobot {
     Victor armBar,armShooter;
     Spark launcher,roller;
     Relay extension;
-    CameraServer server;
+    CameraServer server, serverTwo;
     double distance;
-    final double DEADZONE = 0.10;
+    final double DEADZONE = 0.18;
     
     public void initSmartBoard()
     {
     	autoChooser.addDefault("Under Low Bar", new DefaultAutonomous(myRobot));
     	autoChooser.addObject("Rough Terrain", new rtAutonomous());
         SmartDashboard.putData("Auto Command",autoChooser);  
-        SmartDashboard.putDouble("Distance", distance);
+        SmartDashboard.putNumber("Distance", distance);
         }
     
     public Robot() {
@@ -71,22 +71,27 @@ public class Robot extends SampleRobot {
         server = CameraServer.getInstance();
         server.setQuality(50);
         server.startAutomaticCapture("cam0");
+        
+        /*serverTwo = CameraServer.getInstance();
+        serverTwo.setQuality(50); 
+        serverTwo.startAutomaticCapture("cam1");*/
         initSmartBoard();
     }
     public void autonomous()
     {
     	autonomousCommand = (Command) autoChooser.getSelected();
     	autonomousCommand.start();
-    	Timer.delay(0.05);
+    	//Timer.delay(0.05);
     }
     /**
      * The motors using arcade steering
      */
     public void operatorControl() {
-        myRobot.setSafetyEnabled(true);
+        myRobot.setSafetyEnabled(false);
         while (isOperatorControl() && isEnabled()) 
         {
-        	myRobot.arcadeDrive( -rightStick.getY(), -rightStick.getZ() );			
+        	double magnitude = -rightStick.getRawAxis(3) + 1;
+        	myRobot.arcadeDrive( magnitude * -rightStick.getY(), magnitude * -rightStick.getZ() );
         	//myRobot.arcadeDrive(rightStick, 1,rightStick,2);
         	//Set speed of each arm based on y-axis of each joystick on controller
         		//1 is L Y Axis
@@ -100,11 +105,15 @@ public class Robot extends SampleRobot {
 	        	
 	        
 	        // R Y axis DEADZONE set at instance create
-	        if( controller.getRawAxis(5) <= DEADZONE && controller.getRawAxis(5) >= -DEADZONE ) {
-	        	armShooter.set(-0.15);
+	        double ryAxisMag = controller.getRawAxis(5);
+	        if( ryAxisMag <= DEADZONE && ryAxisMag >= -DEADZONE ) {
+	        	armShooter.set(-0.2);
 	        }
-	        else {
-	        	armShooter.set(controller.getRawAxis(5)/2.0);
+	        else if ( ryAxisMag > DEADZONE ) { //DOWN
+	        	armShooter.set(-ryAxisMag/5.0 );
+	        }
+	        else { //UP
+	        	armShooter.set(ryAxisMag/3.0);
 	        }
 	        
 	        //Shooter System NOTE: Not a subsystem. THIS WORKS!
@@ -141,7 +150,7 @@ public class Robot extends SampleRobot {
             	extension.set(Value.kOff);
             }
 	        distance = distanceSensor.getValue();
-            Timer.delay(0.005);		// wait for a motor update time
+            Timer.delay(0.001);		// wait for a motor update time
         }
    }
 }
@@ -150,7 +159,7 @@ public class Robot extends SampleRobot {
 *	CONTROLLER BINDS:
 *	Left Y axis: armBar moves up/down
 *	Right Y Axis: armShooter moves up/down
-*	Left Trigger: Reverse Rev motors (suck in) ‎( ͡° ͜ʖ ͡°)
+*	Left Trigger: Reverse Rev motors (suck in)
 *	Right Trigger: Rev motors
 *	Select: 
 */
