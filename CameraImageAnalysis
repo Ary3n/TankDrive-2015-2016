@@ -13,8 +13,10 @@ public class Camera {
 	final int luminenceHigh = 0;
 	//Values for Analysis
 	double particleArea, boundArea, boundHeight, boundWidth;
+	//Best report
+	int bestReportNum;
 	//How close the Values are to desired ones. Goes up lineared. Best close to 0.
-	double areaComp, lengthComp;
+	double areaComp, lengthComp, bestSumComp;
 	AxisCamera axisCam;
 	HSLImage originalImage;
 	BinaryImage maskedImage;
@@ -26,6 +28,7 @@ public class Camera {
 	}
 	public void doStuff() throws NIVisionException
 	{
+		bestSumComp = 99999999999999.0;
 		axisCam = new AxisCamera("10.25.54.11");
 		axisCam.getImage(originalImage);
 		//Masks Image so only stuff over a certain threshold shows up.
@@ -41,7 +44,8 @@ public class Camera {
 			boundArea = boundHeight * boundWidth;
 			areaComp = Math.abs(1/3.0-particleArea/boundArea);
 			lengthComp = Math.abs(1.6-boundWidth/boundHeight);
-			compReport[i] = areaComp + lengthComp;
+			if((areaComp+lengthComp) < bestSumComp)
+				bestReportNum = i;
 		}
 	}
 }
