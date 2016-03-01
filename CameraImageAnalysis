@@ -1,0 +1,47 @@
+package org.usfirst.frc.team2554.robot;
+
+import edu.wpi.first.wpilibj.image.*;
+import edu.wpi.first.wpilibj.vision.*;
+import java.lang.Math;
+public class Camera {
+	//Limits for the HSL Threshold
+	final int hueLow = 0;
+	final int hueHigh = 0;
+	final int saturationLow = 0;
+	final int saturationHigh = 0;
+	final int luminenceLow = 0;
+	final int luminenceHigh = 0;
+	//Values for Analysis
+	double particleArea, boundArea, boundHeight, boundWidth;
+	//How close the Values are to desired ones. Goes up lineared. Best close to 0.
+	double areaComp, lengthComp;
+	AxisCamera axisCam;
+	HSLImage originalImage;
+	BinaryImage maskedImage;
+	ParticleAnalysisReport originalreport[];
+	double compReport[];
+	public Camera()
+	{
+		
+	}
+	public void doStuff() throws NIVisionException
+	{
+		axisCam = new AxisCamera("10.25.54.11");
+		axisCam.getImage(originalImage);
+		//Masks Image so only stuff over a certain threshold shows up.
+		maskedImage = originalImage.thresholdHSL(hueLow, hueHigh, saturationLow, saturationHigh, luminenceLow, luminenceHigh);
+		//Gets reports for all of the calculated particles
+		originalreport = maskedImage.getOrderedParticleAnalysisReports();
+		//Runs through to generate the best report
+		for(int i = 0; i <originalreport.length;i ++)
+		{
+			particleArea = originalreport[i].particleArea;
+			boundHeight = originalreport[i].boundingRectHeight;
+			boundWidth = originalreport[i].boundingRectWidth;
+			boundArea = boundHeight * boundWidth;
+			areaComp = Math.abs(1/3.0-particleArea/boundArea);
+			lengthComp = Math.abs(1.6-boundWidth/boundHeight);
+			compReport[i] = areaComp + lengthComp;
+		}
+	}
+}
