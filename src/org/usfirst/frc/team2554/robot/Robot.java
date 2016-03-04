@@ -1,9 +1,7 @@
 package org.usfirst.frc.team2554.robot;
 
 
-import org.usfirst.frc.team2554.robot.commands.AutoAim;
-import org.usfirst.frc.team2554.robot.commands.DefaultAutonomous;
-import org.usfirst.frc.team2554.robot.commands.rtAutonomous;
+import org.usfirst.frc.team2554.robot.commands.*;
 
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Joystick;
@@ -46,8 +44,10 @@ public class Robot extends SampleRobot {
     
     public void initSmartBoard()
     {
-    	autoChooser.addDefault("Under Low Bar", new DefaultAutonomous(myRobot));
-    	autoChooser.addObject("Rough Terrain", new rtAutonomous());
+    	autoChooser.addDefault("Do Nothing(Default)",new DoNothing(myRobot));
+    	autoChooser.addObject("Under Low Bar", new DefaultAutonomous(myRobot));
+    	autoChooser.addObject("Rough Terrain", new rtAutonomous(myRobot));
+    	autoChooser.addObject("Portcullis", new Portcullis(myRobot, armBar));
         SmartDashboard.putData("Auto Command",autoChooser);  
         SmartDashboard.putNumber("Distance", distance);
         }
@@ -68,7 +68,7 @@ public class Robot extends SampleRobot {
         distanceSensor = new AnalogInput(1);
         autoChooser = new SendableChooser();
         distance = 0;
-
+        autonomousCommand = new rtAutonomous(myRobot);
         server = CameraServer.getInstance();
         server.setQuality(50);
         server.startAutomaticCapture("cam0");
@@ -80,9 +80,16 @@ public class Robot extends SampleRobot {
     }
     public void autonomous()
     {
+    	/*
     	autonomousCommand = (Command) autoChooser.getSelected();
+        if(isAutonomous() && isEnabled())
+    	{
     	autonomousCommand.start();
-    	//Timer.delay(0.05);
+    	}*/
+    	myRobot.setSafetyEnabled(false);
+    	myRobot.drive(0.5, 0);
+    	Timer.delay(5);
+    	myRobot.drive(0, 0);
     }
     /**
      * The motors using arcade steering
@@ -111,10 +118,10 @@ public class Robot extends SampleRobot {
 	        	armShooter.set(-0.13);
 	        }
 	        else if ( ryAxisMag > DEADZONE ) { //DOWN
-	        	armShooter.set(ryAxisMag/4.0 );
+	        	armShooter.set(ryAxisMag/5.0 ); //4.0
 	        }
 	        else { //UP
-	        	armShooter.set((ryAxisMag/3.0)*2.0);
+	        	armShooter.set((ryAxisMag/4.0)*2.0); //3.0,2.0
 	        }
 	        
 	        //Shooter System NOTE: Not a subsystem. THIS WORKS!
@@ -153,7 +160,7 @@ public class Robot extends SampleRobot {
             }
             */
 	        distance = distanceSensor.getValue();
-            Timer.delay(0.001);		// wait for a motor update time
+            Timer.delay(0.00001);		// wait for a motor update time
         }
    }
 }

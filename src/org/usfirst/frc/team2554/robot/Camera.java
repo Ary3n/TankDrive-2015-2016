@@ -63,6 +63,9 @@ public class Camera {
 		//The values are flipped because the camera is sideways
 		xCoord = originalreport[bestReportNum].center_mass_y_normalized;
 		yCoord = originalreport[bestReportNum].center_mass_x_normalized;
+		originalImage.free();
+		maskedImage.free();
+		erodedImage.free();
 	}
 	public static void adjustShooter()
 	{

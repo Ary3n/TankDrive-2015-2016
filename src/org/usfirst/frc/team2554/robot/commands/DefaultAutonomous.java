@@ -23,20 +23,23 @@ public class DefaultAutonomous extends Command {
     protected void execute() {
     	myRobot.tankDrive(0.5,0.5); //myRobot.drive(.5,0);
     	Timer.delay(2.0);
+    	myRobot.tankDrive(0,0);
+    	
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return(timeSinceInitialized()>2);
+        return(timeSinceInitialized()>15);
     }
 
     // Called once after isFinished returns true
     protected void end() {
-    	myRobot.drive(0,0);
+    	myRobot.tankDrive(0,0);
     }
 
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
+    	myRobot.tankDrive(0,0);
     }
 }
