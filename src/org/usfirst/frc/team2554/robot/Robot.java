@@ -40,7 +40,7 @@ public class Robot extends SampleRobot {
     Spark launcher,roller;
     Relay extension;
     CameraServer server, serverTwo;
-    double distance;
+    static double distance;
     final double DEADZONE = 0.18;
     
     public void initSmartBoard()
@@ -163,15 +163,3 @@ public class Robot extends SampleRobot {
 *	Right Trigger: Rev motors
 *	Select: 
 */
-/*
- Warning  44003  FRC:  No robot code is currently running.  Driver Station 
- Java HotSpot(TM) Embedded Client VM warning: INFO: os::commit_memory(0xb2ea3000, 22814720, 0) failed; error='Cannot allocate memory' (errno=12) 
- # There is insufficient memory for the Java Runtime Environment to continue. 
- # An error report file with more information is saved as: 
- âž” Launching Â«'/usr/local/frc/JRE/bin/java' '-jar' '/home/lvuser/FRCUserProgram.jar'Â» 
- NT: server: client CONNECTED: 10.25.54.158 port 55973 
- Camera not yet ready, awaiting image 
- Default disabled() method running, consider providing your own 
- # 
- # /tmp/hs_err_pid2729.log 
- */
