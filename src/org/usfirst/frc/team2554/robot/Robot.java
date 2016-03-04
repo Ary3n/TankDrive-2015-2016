@@ -87,7 +87,7 @@ public class Robot extends SampleRobot {
      * The motors using arcade steering
      */
     public void operatorControl() {
-        myRobot.setSafetyEnabled(false);
+        myRobot.setSafetyEnabled(true);
         while (isOperatorControl() && isEnabled()) 
         {
         	double magnitude = -rightStick.getRawAxis(3) + 1;
@@ -97,7 +97,7 @@ public class Robot extends SampleRobot {
         		//1 is L Y Axis
         		//5 is R Y Axis
 	        if(controller.getRawAxis(1) <= DEADZONE && controller.getRawAxis(1) >= -DEADZONE) {
-	        	armBar.set(-0.08);
+	        	armBar.set(-0.14);
 	        }
 	        else {
 	        	armBar.set(controller.getRawAxis(1)/3.0);
@@ -107,13 +107,13 @@ public class Robot extends SampleRobot {
 	        // R Y axis DEADZONE set at instance create
 	        double ryAxisMag = controller.getRawAxis(5);
 	        if( ryAxisMag <= DEADZONE && ryAxisMag >= -DEADZONE ) {
-	        	armShooter.set(-0.2);
+	        	armShooter.set(-0.13);
 	        }
 	        else if ( ryAxisMag > DEADZONE ) { //DOWN
-	        	armShooter.set(-ryAxisMag/5.0 );
+	        	armShooter.set(ryAxisMag/4.0 );
 	        }
 	        else { //UP
-	        	armShooter.set(ryAxisMag/3.0);
+	        	armShooter.set((ryAxisMag/3.0)*2.0);
 	        }
 	        
 	        //Shooter System NOTE: Not a subsystem. THIS WORKS!
@@ -122,7 +122,7 @@ public class Robot extends SampleRobot {
 	        	shooter.arcadeDrive(0,-controller.getRawAxis(3)); 					
 	        //Collector; 2 is left trigger
 	        if( controller.getRawAxis(2) > 0.1 ) {
-	        	shooter.arcadeDrive(0,controller.getRawAxis(2));
+	        	shooter.arcadeDrive(0,(controller.getRawAxis(2)/5.0)*4.0);
 	        	roller.set(0.4);
 	        } else {
 	        	roller.set(0.0);
@@ -139,9 +139,10 @@ public class Robot extends SampleRobot {
 	        } else {
 	        	launcher.set(1);
 	        }
-	        autoAimButton.whileHeld(new AutoAim(myRobot,armShooter));
+	       // autoAimButton.whileHeld(new AutoAim(myRobot,armShooter));
 	        
 	        // 1 is A
+	        /*
             if( controller.getRawButton(1) ) {
             	extension.set(Value.kReverse);
             } else if( controller.getRawButton(2) ) {
@@ -149,7 +150,8 @@ public class Robot extends SampleRobot {
             } else {
             	extension.set(Value.kOff);
             }
-	        distance = distanceSensor.getValue();
+            */
+	        //distance = distanceSensor.getValue();
             Timer.delay(0.001);		// wait for a motor update time
         }
    }
