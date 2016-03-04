@@ -7,35 +7,37 @@ import java.lang.Math;
 
 public class Camera {
 	//Limits for the HSL Threshold
-	final static int hueLow = 0;
-	final static int hueHigh = 0;
-	final static int saturationLow = 0;
-	final static int saturationHigh = 0;
-	final static int luminenceLow = 0;
-	final static int luminenceHigh = 0;
+	final private static int hueLow = 0;
+	final private static int hueHigh = 0;
+	final private static int saturationLow = 0;
+	final private static int saturationHigh = 0;
+	final private static int luminenceLow = 0;
+	final private static int luminenceHigh = 0;
 	//Values for Analysis
-	static double particleArea, boundArea, boundHeight, boundWidth;
+	static private double particleArea, boundArea, boundHeight, boundWidth;
 	//Best report
-	static int bestReportNum;
+	static private int bestReportNum;
 	//How close the Values are to desired ones. Goes up linearly. Best close to 0.
-	static double areaComp, lengthComp, bestSumComp;
-	static AxisCamera axisCam;
-	static HSLImage originalImage;
-	static BinaryImage maskedImage, erodedImage;
+	static private double areaComp, lengthComp, bestSumComp;
+	static private AxisCamera axisCam;
+	static private HSLImage originalImage;
+	static private BinaryImage maskedImage, erodedImage;
 	//Number of Erosions
-	final static  int erosions = 3;
-	static ParticleAnalysisReport originalreport[];
-	//The ideal shot point
-	static int xCoord, yCoord, acceptableRegion, yAdjustment;
+	final private static  int erosions = 3;
+	static private ParticleAnalysisReport originalreport[];
+	//The point where the center of the goal is
+	static double xCoord, yCoord;
+	//Center of Screen/Where the ball shoots
+	static private double xScreenCoord, yScreenCoord, acceptableRegion, yAdjustment;
 	public Camera()
 	{
 	}
-	public static void doStuff() throws NIVisionException
+	public static void getCenterValues() throws NIVisionException
 	{
 		bestSumComp = 99999999999999.0;
-		yAdjustment = 40;
-		xCoord = 320;
-		yCoord = 240 + yAdjustment; 
+		yAdjustment = 40/480;
+		xCoord = 320/640;
+		yCoord = 240/480 + yAdjustment; 
 		axisCam = new AxisCamera("10.25.54.11");
 		axisCam.getImage(originalImage);
 		//Masks Image so only stuff over a certain threshold shows up.
@@ -57,5 +59,12 @@ public class Camera {
 			if((areaComp+lengthComp) < bestSumComp)
 				bestReportNum = i;
 		}
+		//The values are flipped because the camera is sideways
+		xCoord = originalreport[bestReportNum].center_mass_y_normalized;
+		yCoord = originalreport[bestReportNum].center_mass_x_normalized;
+	}
+	public static void adjustShooter()
+	{
+		
 	}
 }
