@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.AnalogInput;
 public class Robot extends SampleRobot {
-    RobotDrive myRobot;  // class that handles basic drive operations
+    static RobotDrive myRobot;  // class that handles basic drive operations
     RobotDrive shooter;
     
     // Two drivers necessary!
@@ -36,7 +36,8 @@ public class Robot extends SampleRobot {
     JoystickButton launchButton, autoAimButton;
     SendableChooser autoChooser;
     Command autonomousCommand;
-    Victor armBar,armShooter;
+    Victor armBar;
+    static Victor armShooter;
     Spark launcher,roller;
     Relay extension;
     CameraServer server, serverTwo;
@@ -151,7 +152,7 @@ public class Robot extends SampleRobot {
             	extension.set(Value.kOff);
             }
             */
-	        //distance = distanceSensor.getValue();
+	        distance = distanceSensor.getValue();
             Timer.delay(0.001);		// wait for a motor update time
         }
    }

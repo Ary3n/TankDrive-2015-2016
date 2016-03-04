@@ -2,6 +2,7 @@ package org.usfirst.frc.team2554.robot;
 
 import edu.wpi.first.wpilibj.image.*;
 import edu.wpi.first.wpilibj.vision.*;
+import edu.wpi.first.wpilibj.Timer;
 import org.usfirst.frc.team2554.robot.Robot;
 import java.lang.Math;
 
@@ -28,16 +29,16 @@ public class Camera {
 	//The point where the center of the goal is
 	static double xCoord, yCoord;
 	//Center of Screen/Where the ball shoots
-	static private double xScreenCoord, yScreenCoord, acceptableRegion, yAdjustment;
+	static private double xScreenCoord, yScreenCoord, acceptableRegion, xAdjustment;
 	public Camera()
 	{
 	}
 	public static void getCenterValues() throws NIVisionException
 	{
 		bestSumComp = 99999999999999.0;
-		yAdjustment = 40/480;
 		xCoord = 320/640;
-		yCoord = 240/480 + yAdjustment; 
+		yCoord = 240/480 + xAdjustment(); 
+		acceptableRegion = 10/480;
 		axisCam = new AxisCamera("10.25.54.11");
 		axisCam.getImage(originalImage);
 		//Masks Image so only stuff over a certain threshold shows up.
@@ -65,6 +66,25 @@ public class Camera {
 	}
 	public static void adjustShooter()
 	{
-		
+		xScreenCoord = yScreenCoord = 0;
+		if((xScreenCoord > xCoord + xAdjustment()))
+		{
+			Robot.armShooter.set(0.1);
+			Timer.delay(0.1);
+			Robot.armShooter.set(0);
+		}
+		if((xScreenCoord > xCoord - xAdjustment()/2))
+		{
+			Robot.armShooter.set(0.1);
+		}
+		if((yScreenCoord>yCoord))
+		{
+			Robot.myRobot.arcadeDrive(0,0.1);
+		}
+	}
+	public static double xAdjustment()
+	{
+		xAdjustment = 40/480;
+		return xAdjustment;
 	}
 }
