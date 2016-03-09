@@ -2,6 +2,7 @@ package org.usfirst.frc.team2554.robot;
 
 
 import org.usfirst.frc.team2554.robot.commands.*;
+import org.usfirst.frc.team2554.robot.Camera;
 
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Joystick;
@@ -24,11 +25,13 @@ public class Robot extends SampleRobot {
     // Two drivers necessary!
     
     /*
+     * 
      	PORT 0 MUST BE JOYSTICK OR THINGS WON'T WORK
     	PORT 1 MUST BE CONTROLLER OR THINGS WON'T WORK
     	CONTROLLER MUST BE SET TO XINPUT
     	CONTROLLER BINDS @ EOF
      */
+    //Timer timer;
     AnalogInput distanceSensor;
     Joystick rightStick, controller; // set CONTROLLER to ID 1 in DriverStation
     JoystickButton launchButton, autoAimButton;
@@ -40,7 +43,7 @@ public class Robot extends SampleRobot {
     Relay extension;
     CameraServer server, serverTwo;
     static double distance;
-    final double DEADZONE = 0.18;
+    final double DEADZONE = 0.15;
     
     public void initSmartBoard()
     {
@@ -53,6 +56,7 @@ public class Robot extends SampleRobot {
         }
     
     public Robot() {
+    	//timer = new Timer();
         myRobot = new RobotDrive(3,1); //FrontLeft, BackLeft, FrontRight, BackRight 
         shooter = new RobotDrive(4,5);
         armBar = new Victor(6);
@@ -72,7 +76,6 @@ public class Robot extends SampleRobot {
         server = CameraServer.getInstance();
         server.setQuality(50);
         server.startAutomaticCapture("cam0");
-        
         /*serverTwo = CameraServer.getInstance();
         serverTwo.setQuality(50); 
         serverTwo.startAutomaticCapture("cam1");*/
@@ -87,15 +90,20 @@ public class Robot extends SampleRobot {
     	autonomousCommand.start();
     	}*/
     	myRobot.setSafetyEnabled(false);
-    	myRobot.drive(0.5, 0);
-    	Timer.delay(5);
+    	armBar.set(0.5);
+    	armShooter.set(-0.25);
+    	Timer.delay(0.5);
+    	armShooter.set(0);
+    	armBar.set(0);
+    	myRobot.drive(0.45, 0);
+    	Timer.delay(4);
     	myRobot.drive(0, 0);
     }
     /**
      * The motors using arcade steering
      */
     public void operatorControl() {
-        myRobot.setSafetyEnabled(true);
+        myRobot.setSafetyEnabled(false);
         while (isOperatorControl() && isEnabled()) 
         {
         	double magnitude = -rightStick.getRawAxis(3) + 1;
@@ -105,7 +113,7 @@ public class Robot extends SampleRobot {
         		//1 is L Y Axis
         		//5 is R Y Axis
 	        if(controller.getRawAxis(1) <= DEADZONE && controller.getRawAxis(1) >= -DEADZONE) {
-	        	armBar.set(-0.14);
+	        	armBar.set(-0.08);
 	        }
 	        else {
 	        	armBar.set(controller.getRawAxis(1)/3.0);
@@ -113,16 +121,18 @@ public class Robot extends SampleRobot {
 	        	
 	        
 	        // R Y axis DEADZONE set at instance create
-	        double ryAxisMag = controller.getRawAxis(5);
+	        double ryAxisMag = -controller.getRawAxis(5);
 	        if( ryAxisMag <= DEADZONE && ryAxisMag >= -DEADZONE ) {
-	        	armShooter.set(-0.13);
+	        	armShooter.set(0.20);
 	        }
-	        else if ( ryAxisMag > DEADZONE ) { //DOWN
-	        	armShooter.set(ryAxisMag/5.0 ); //4.0
+	        else if(ryAxisMag < 0){
+	        	armShooter.set(ryAxisMag/7.0 ); //4.0
 	        }
-	        else { //UP
-	        	armShooter.set((ryAxisMag/4.0)*2.0); //3.0,2.0
+	        else if(ryAxisMag >0)
+	        {
+	        	armShooter.set(ryAxisMag/2.0);
 	        }
+
 	        
 	        //Shooter System NOTE: Not a subsystem. THIS WORKS!
 	        //3 is Right Trigger
@@ -141,26 +151,39 @@ public class Robot extends SampleRobot {
 	        	roller.set(0);
 	        }
 	        
-	        // 6 is left bumper?
-	        if (controller.getRawButton(6)) {
-	        	launcher.set(-1);
+	        // 6 is left bumper? BROKEN
+	        //4 is Y
+	       //double strokeLength = 0;
+	        if (controller.getRawButton(4)) {
+	           //timer.start();
+	        	//timer.reset();
+				//(strokeLength < 25)
+	        	//	{
+					launcher.set(-1);
+				//	strokelength = 50*timer.get();
+				//  }
+				//timer.stop();
+				//timer.reset();
 	        } else {
 	        	launcher.set(1);
 	        }
+	        
 	       // autoAimButton.whileHeld(new AutoAim(myRobot,armShooter));
 	        
 	        // 1 is A
-	        /*
+	        
             if( controller.getRawButton(1) ) {
             	extension.set(Value.kReverse);
             } else if( controller.getRawButton(2) ) {
             	extension.set(Value.kForward);
             } else {
-            	extension.set(Value.kOff);
+            	extension .set(Value.kOff);
             }
-            */
+            
+            
+            
 	        distance = distanceSensor.getValue();
-            Timer.delay(0.00001);		// wait for a motor update time
+            Timer.delay(0.000000000001);		// wait for a motor update time
         }
    }
 }
