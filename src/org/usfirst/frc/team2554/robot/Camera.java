@@ -1,8 +1,9 @@
 package org.usfirst.frc.team2554.robot;
 
-import edu.wpi.first.wpilibj.image.*;
 import edu.wpi.first.wpilibj.vision.*;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.image.*;
+
 import org.usfirst.frc.team2554.robot.Robot;
 import java.lang.Math;
 
@@ -15,11 +16,11 @@ public class Camera {
 	final private static int luminenceLow = 0;
 	final private static int luminenceHigh = 0;
 	//Values for Analysis
-	static private double particleArea, boundArea, boundHeight, boundWidth;
+	static private double particleArea = 0, boundArea = 0, boundHeight = 0, boundWidth = 0;
 	//Best report
-	static private int bestReportNum;
+	static private int bestReportNum = 0;
 	//How close the Values are to desired ones. Goes up linearly. Best close to 0.
-	static private double areaComp, lengthComp, bestSumComp;
+	static private double areaComp = 0, lengthComp = 0, bestSumComp = 0;
 	static private AxisCamera axisCam;
 	static private HSLImage originalImage;
 	static private BinaryImage maskedImage, erodedImage;
@@ -35,6 +36,8 @@ public class Camera {
 	}
 	public static void getCenterValues() throws NIVisionException
 	{
+		originalImage = new HSLImage();
+		maskedImage = new BinaryImage();
 		bestSumComp = 99999999999999.0;
 		xCoord = 320/640;
 		yCoord = 240/480 + xAdjustment(); 
