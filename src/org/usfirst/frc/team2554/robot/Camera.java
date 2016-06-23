@@ -8,6 +8,7 @@ import org.usfirst.frc.team2554.robot.Robot;
 import java.lang.Math;
 
 public class Camera {
+	//Initializations
 	//Limits for the HSL Threshold
 	final private static int hueLow = 0;
 	final private static int hueHigh = 0;
@@ -37,7 +38,8 @@ public class Camera {
 	public static void getCenterValues() throws NIVisionException
 	{
 		originalImage = new HSLImage();
-		maskedImage = new BinaryImage();
+		maskedImage = (BinaryImage) new MonoImage();
+		erodedImage = (BinaryImage) new MonoImage();
 		bestSumComp = 99999999999999.0;
 		xCoord = 320/640;
 		yCoord = 240/480 + xAdjustment(); 
@@ -49,7 +51,10 @@ public class Camera {
 		//Erodes the image so the smaller objects disappear. Decreases size of the array of Particle Analysis Reports
 		erodedImage = maskedImage.removeSmallObjects(false, erosions);
 		//Gets reports for all of the calculated particles
+		
+		//WILL THIS NEED A INITIALIZATION TOO?
 		originalreport = erodedImage.getOrderedParticleAnalysisReports();
+		
 		//Runs through to generate the best report
 		for(int i = 0; i <originalreport.length;i ++)
 		{
