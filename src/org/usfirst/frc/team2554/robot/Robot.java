@@ -20,6 +20,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
+
+import java.util.InputMismatchException;
+
 public class Robot extends SampleRobot {
     static RobotDrive myRobot;  // class that handles basic drive operations
     RobotDrive shooter;
@@ -37,13 +40,14 @@ public class Robot extends SampleRobot {
     AnalogInput distanceSensor;
     DigitalInput limitSwitchShooter;
     Joystick rightStick, controller; // set CONTROLLER to ID 1 in DriverStation
-    JoystickButton launchButton, autoAimButton;
+    JoystickButton launchButton, autoAimButton, leftStickClick; //newly added
     SendableChooser autoChooser;
     Command autonomousCommand;
     Victor armBar;
     static Victor armShooter;
     Spark launcher,roller;
     Relay extension;
+
     //CameraServer server, serverTwo;
     static double distance;
     final double DEADZONE = 0.15;
@@ -69,6 +73,7 @@ public class Robot extends SampleRobot {
         myRobot.setExpiration(0.1);
         rightStick = new Joystick(0);
         controller = new Joystick(1);
+        leftStickClick = new JoystickButton(controller, 9); //newly added line
         launchButton = new JoystickButton(controller, 6);
         autoAimButton = new JoystickButton(controller,5);
         distanceSensor = new AnalogInput(1);
@@ -111,7 +116,10 @@ public class Robot extends SampleRobot {
         {
         	Scheduler.getInstance().run();
         	double magnitude = -rightStick.getRawAxis(3) + 1;
-        	myRobot.arcadeDrive( magnitude * -rightStick.getY(), magnitude * -rightStick.getZ() );
+            if( !leftStickClick.get() )
+        	    myRobot.arcadeDrive( magnitude * -rightStick.getY(), magnitude * -rightStick.getZ() );
+            else if( leftStickClick.get() )
+                myRobot.arcadeDrive( magnitude * -rightStick.getY(), 0 ); //newly added line
         	//myRobot.arcadeDrive(rightStick, 1,rightStick,2);
         	//Set speed of each arm based on y-axis of each joystick on controller
         		//1 is L Y Axis
@@ -176,20 +184,19 @@ public class Robot extends SampleRobot {
             } else {
             	extension .set(Value.kOff);
             }*/
-            
-            
-            
+
 	        distance = distanceSensor.getValue();
             Timer.delay(0.000000000001);		// wait for a motor update time
         }
    }
 }
 
-/**
-*	CONTROLLER BINDS:
-*	Left Y axis: armBar moves up/down
-*	Right Y Axis: armShooter moves up/down
-*	Left Trigger: Reverse Rev motors (suck in)
-*	Right Trigger: Rev motors
-*	Select: 
+/*
+	CONTROLLER BINDS:
+	Left Y axis: armBar moves up/down
+	Right Y Axis: armShooter moves up/down
+	Left Trigger: Reverse Rev motors (suck in)
+	Right Trigger: Rev motors
+   Left Stick Click: Disable turning
+	Select:
 */
