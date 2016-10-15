@@ -73,7 +73,7 @@ public class Robot extends SampleRobot {
         myRobot.setExpiration(0.1);
         rightStick = new Joystick(0);
         controller = new Joystick(1);
-        leftStickClick = new JoystickButton(controller, 9); //newly added line
+        leftStickClick = new JoystickButton(rightStick, 9); //newly added line
         launchButton = new JoystickButton(controller, 6);
         autoAimButton = new JoystickButton(controller,5);
         distanceSensor = new AnalogInput(1);
@@ -120,6 +120,8 @@ public class Robot extends SampleRobot {
         	    myRobot.arcadeDrive( magnitude * -rightStick.getY(), magnitude * -rightStick.getZ() );
             else if( leftStickClick.get() )
                 myRobot.arcadeDrive( magnitude * -rightStick.getY(), 0 ); //newly added line
+            else
+            	myRobot.arcadeDrive( magnitude * -rightStick.getY(), magnitude * -rightStick.getZ() );
         	//myRobot.arcadeDrive(rightStick, 1,rightStick,2);
         	//Set speed of each arm based on y-axis of each joystick on controller
         		//1 is L Y Axis
