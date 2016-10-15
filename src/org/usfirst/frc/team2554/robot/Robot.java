@@ -116,10 +116,10 @@ public class Robot extends SampleRobot {
         {
         	Scheduler.getInstance().run();
         	double magnitude = -rightStick.getRawAxis(3) + 1;
-            //if( !leftStickClick.get() )
-        	    //myRobot.arcadeDrive( magnitude * -rightStick.getY(), magnitude * -rightStick.getZ() );
-            //else if( leftStickClick.get() )
-               // myRobot.arcadeDrive( magnitude * -rightStick.getY(), 0 ); //newly added line
+            if( !leftStickClick.get() )
+        	    myRobot.arcadeDrive( magnitude * -rightStick.getY(), magnitude * -rightStick.getZ() );
+            else if( leftStickClick.get() )
+                myRobot.arcadeDrive( magnitude * -rightStick.getY(), 0 ); //newly added line
         	//myRobot.arcadeDrive(rightStick, 1,rightStick,2);
         	//Set speed of each arm based on y-axis of each joystick on controller
         		//1 is L Y Axis
