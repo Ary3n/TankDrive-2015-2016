@@ -1,5 +1,6 @@
 package org.usfirst.frc.team2554.robot;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
@@ -9,16 +10,16 @@ public class AutoAim {
 	double xValue, yValue;
 	final double DEADZONE = 30;
 	
-	public void run(RobotDrive myRobot, Victor shooterArm, RobotDrive shooter)
+	public void run(RobotDrive myRobot, Victor shooterArm, RobotDrive shooter, DigitalInput limitSwitch)
 	{
 		changeValues();
 		if(xValue > DEADZONE)
 				myRobot.arcadeDrive(0,-0.1);
 		if(xValue < -DEADZONE)
 				myRobot.arcadeDrive(0,0.1);
-		if(yValue < DEADZONE)
+		if(yValue < DEADZONE && !limitSwitch.get())
 				shooterArm.set(0.1);
-		if(yValue > DEADZONE * 2)
+		if(yValue > DEADZONE * 2 && !limitSwitch.get())
 				shooterArm.set(-0.1);
 		
 		if(xValue < DEADZONE && xValue > -DEADZONE && yValue > DEADZONE && yValue < 2*DEADZONE)
