@@ -183,7 +183,8 @@ public class Robot extends SampleRobot {
             } else {
             	extension .set(Value.kOff);
             }*/
-
+	        if(controller.getRawButton(1))
+	        		AutoAim.run(shooter, armBar, shooter, launcher, limitSwitchShooter);
 	        distance = distanceSensor.getValue();
             Timer.delay(0.000000000001);		// wait for a motor update time
         }
